@@ -1,0 +1,164 @@
+LAB 8 SUMMARY: LOGIT AND PROBIT MODELS
+Michael Stewart
+
+================================================================================
+PART 1: MODEL COMPARISON (OLS vs Logit vs Probit)
+================================================================================
+
+Estimated three models using identical variables from Lab 7:
+Variables: educ_hs + educ_somecoll + educ_college + educ_advdeg + AGE
+
+CONFUSION MATRICES (using cutoff = 0.0797):
+
+OLS:
+       0      1
+  0  200998  12161
+  1  178438  20678
+
+Logit:
+       0      1
+  0  228202  14424
+  1  151234  18415
+
+Probit:
+       0      1
+  0  223521  14007
+  1  155915  18832
+
+FINDING: All three methods produce similar predictions. All education 
+coefficients remain highly significant (p < 0.001) with negative signs, 
+confirming that higher education reduces the probability of large age gaps.
+
+================================================================================
+PART 2: THRESHOLD ANALYSIS
+================================================================================
+
+Tested different classification cutoffs using logit model:
+
+Cutoff = 0.05 (low threshold):
+       0      1
+  0   60084   2536
+  1  319352  30303
+Result: Many false positives (319,352), few false negatives (2,536)
+
+Cutoff = 0.10 (higher threshold):
+       0      1
+  0  302756  21903
+  1   76680  10936
+Result: Fewer false positives (76,680), more false negatives (21,903)
+
+FINDING: Higher cutoffs are more conservative but miss more true cases.
+
+================================================================================
+PART 3: TESTING NEW VARIABLES
+================================================================================
+
+Tested whether adding race and interracial status improves prediction:
+
+Model 1 (Baseline): educ + age
+AIC: 223,902
+
+Model 2 (+ Race): educ + age + RACE  
+AIC: 222,629
+IMPROVEMENT: AIC dropped by 1,273 points
+
+Model 3 (+ Interracial): educ + age + RACE + interracial
+AIC: 222,048
+IMPROVEMENT: AIC dropped by additional 581 points
+
+FINDINGS:
+- Race significantly improves model fit
+- Interracial status also improves fit
+- Both Black (coef: 0.584, p<0.001) and Asian/Pacific Islander (coef: 0.468, 
+  p<0.001) women show higher likelihood of large age gaps
+- Interracial coefficient: 0.401 (p<0.001), indicating interracial couples 
+  more likely to have large age gaps
+
+================================================================================
+PART 4: EXOGENEITY AND CAUSALITY
+================================================================================
+
+LIKELY EXOGENOUS:
+- Race: Determined at birth
+- Education: Usually completed before marriage
+- Age: Observable characteristic at time of relationship
+
+POTENTIALLY ENDOGENOUS:
+- Interracial status: Could be a choice influenced by unobserved preferences
+
+================================================================================
+PART 5: SUBGROUP ANALYSIS
+================================================================================
+
+Analyzed prediction accuracy across racial subgroups using Model 3:
+
+RACE                             ACCURACY    SAMPLE SIZE
+Black                            24.7%       19,252
+Other Asian/Pacific Islander     26.0%       26,443
+Other race                       33.2%       21,298
+three races                      34.9%       1,844
+American Indian/Alaska Native    35.5%       3,772
+two races                        36.7%       34,537
+Chinese                          40.7%       8,482
+Japanese                         61.9%       2,037
+White                            73.2%       294,610
+
+MAJOR FINDING: The model exhibits severe performance disparities. It achieves 
+73% accuracy for White women but only 25-26% for Black and Asian/Pacific 
+Islander women.
+
+This is potentially due to sample size imbalance: White women comprise 71% of dataset
+
+================================================================================
+PART 6: RACE-SPECIFIC MODELS
+================================================================================
+
+Estimated separate logit models for three racial groups to test whether patterns differ across groups  
+
+ACCURACY COMPARISON:
+
+White women:
+- Combined model: 73.2%
+- Race-specific model: 58.7%
+- CHANGE: Decreased
+
+Black women:
+- Combined model: 24.7%
+- Race-specific model: 61.5%
+- CHANGE: More than doubled (149% increase)
+
+Asian/Pacific Islander women:
+- Combined model: 26.0%
+- Race-specific model: 65.7%
+- CHANGE: More than doubled (153% increase)
+
+INTERPRETATION: Race-specific models dramatically improve prediction accuracy 
+for minority groups.
+This suggests the education-age-interracial relationships 
+operate fundamentally differently across racial groups. For example: Maybe for White women having a college degree reduces age gap 
+likelihood by a greater percentage than for Black or Asian women.
+
+The combined model imposes White women's patterns on all groups, resulting in poor performance 
+for minorities.
+
+White women's accuracy decreased with race-specific model because the 
+combined model was already optimized for them due to their 
+dominance in the dataset.
+
+================================================================================
+FINDINGS
+================================================================================
+
+1. Logit and probit perform similarly to OLS, with the advantage of producing 
+   interpretable probabilities
+2. Classification threshold choice involves tradeoff between false positives 
+   and false negatives
+3. Race improves model fit substantially (AIC reduction of 1,273)
+4. Interracial status adds additional predictive value (AIC reduction of 581)
+5. Education, age, and race are likely exogenous; interracial status is likely endogenous
+6. Model exhibits substantial algorithmic bias: 73% accuracy for White women 
+   vs 25-26% for Black and Asian/Pacific Islander women
+7. Race-specific models more than double accuracy for minority groups 
+   (from 25-26% to 62-66%)
+8. The improvement from race-specific models demonstrates that relationship 
+   patterns differ fundamentally across racial groups
